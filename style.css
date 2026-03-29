@@ -92,6 +92,26 @@ h1 {
   gap: 8px;
 }
 
+.player-row {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.player-row label {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.player-row input {
+  width: min(100%, 260px);
+  font: inherit;
+  color: inherit;
+  background: #fff;
+  border: 1px solid var(--button-border);
+  padding: 10px 12px;
+}
+
 button {
   font: inherit;
   color: inherit;
@@ -158,6 +178,31 @@ button:hover {
 
 .control--right {
   grid-column: 3;
+}
+
+.leaderboard {
+  border: 1px solid var(--border);
+  padding: 12px;
+  margin-bottom: 16px;
+  background: #fff;
+}
+
+.leaderboard h2 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}
+
+.leaderboard ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.leaderboard li {
+  padding: 2px 0;
+}
+
+.leaderboard__empty {
+  color: var(--muted);
 }
 
 .help {
