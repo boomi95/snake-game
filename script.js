@@ -389,7 +389,27 @@ function togglePause() {
   render();
 }
 
+function isEditableElement(element) {
+  if (!element || !(element instanceof Element)) {
+    return false;
+  }
+
+  return Boolean(element.closest("input, textarea, [contenteditable=\"\"], [contenteditable=\"true\"]"));
+}
+
+function shouldIgnoreGameKey(event) {
+  if (isEditableElement(event.target)) {
+    return true;
+  }
+
+  return isEditableElement(document.activeElement);
+}
+
 document.addEventListener("keydown", (event) => {
+  if (shouldIgnoreGameKey(event)) {
+    return;
+  }
+
   const direction = keyToDirection(event.key);
 
   if (direction) {
