@@ -389,7 +389,10 @@ function togglePause() {
   render();
 }
 
-document.addEventListener("keydown", (event) => {
+
+    return;
+  }
+
   const direction = keyToDirection(event.key);
 
   if (direction) {
