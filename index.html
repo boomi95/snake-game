@@ -28,6 +28,11 @@
         </div>
       </div>
 
+      <div class="player-row">
+        <label for="player-name">Player name</label>
+        <input id="player-name" type="text" maxlength="24" placeholder="Type your name">
+      </div>
+
       <div class="board-wrap">
         <div
           id="board"
@@ -43,6 +48,11 @@
         <button class="control control--down" type="button" data-direction="down">Down</button>
         <button class="control control--right" type="button" data-direction="right">Right</button>
       </div>
+
+      <section class="leaderboard" aria-labelledby="leaderboard-title">
+        <h2 id="leaderboard-title">Last 5 Games</h2>
+        <ol id="leaderboard-list"></ol>
+      </section>
 
       <ul class="help">
         <li>Move: Arrow keys or WASD</li>

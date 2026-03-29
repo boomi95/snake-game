@@ -1,6 +1,9 @@
 const GRID_SIZE = 16;
 const INITIAL_DIRECTION = "right";
 const TICK_MS = 140;
+const LEADERBOARD_STORAGE_KEY = "snake:last-five-games";
+const PLAYER_NAME_STORAGE_KEY = "snake:player-name";
+const LEADERBOARD_LIMIT = 5;
 
 const DIRECTION_VECTORS = {
   up: { x: 0, y: -1 },
@@ -142,15 +145,93 @@ function stepState(state) {
   };
 }
 
+function normalizePlayerName(name) {
+  const trimmed = name.trim();
+  return trimmed ? trimmed.slice(0, 24) : "Anonymous";
+}
+
+function loadLeaderboard() {
+  try {
+    const raw = window.localStorage.getItem(LEADERBOARD_STORAGE_KEY);
+    if (!raw) {
+      return [];
+    }
+
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed
+      .filter((entry) => entry && typeof entry.score === "number" && typeof entry.player === "string")
+      .slice(0, LEADERBOARD_LIMIT);
+  } catch (error) {
+    return [];
+  }
+}
+
+function saveLeaderboard(leaderboard) {
+  window.localStorage.setItem(
+    LEADERBOARD_STORAGE_KEY,
+    JSON.stringify(leaderboard.slice(0, LEADERBOARD_LIMIT)),
+  );
+}
+
+function loadPlayerName() {
+  try {
+    return window.localStorage.getItem(PLAYER_NAME_STORAGE_KEY) || "";
+  } catch (error) {
+    return "";
+  }
+}
+
+function savePlayerName(name) {
+  try {
+    window.localStorage.setItem(PLAYER_NAME_STORAGE_KEY, name);
+  } catch (error) {
+    // no-op when local storage is blocked
+  }
+}
+
+function formatTimestamp(timestamp) {
+  if (!timestamp) {
+    return "";
+  }
+
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return date.toLocaleString();
+}
+
+function recordGame(leaderboard, playerName, score) {
+  const entry = {
+    player: normalizePlayerName(playerName),
+    score,
+    playedAt: new Date().toISOString(),
+  };
+
+  const updated = [entry, ...leaderboard].slice(0, LEADERBOARD_LIMIT);
+  saveLeaderboard(updated);
+  return updated;
+}
+
 const boardElement = document.querySelector("#board");
 const scoreElement = document.querySelector("#score");
 const statusElement = document.querySelector("#status");
 const pauseButton = document.querySelector("#pause-button");
 const restartButton = document.querySelector("#restart-button");
+const playerNameInput = document.querySelector("#player-name");
+const leaderboardList = document.querySelector("#leaderboard-list");
 const controlButtons = Array.from(document.querySelectorAll("[data-direction]"));
 
+let leaderboard = loadLeaderboard();
 let state = createInitialState();
 let tickHandle = null;
+
+playerNameInput.value = loadPlayerName();
 
 function buildBoard() {
   const totalCells = GRID_SIZE * GRID_SIZE;
@@ -168,6 +249,25 @@ function buildBoard() {
 
 function getCellIndex(point) {
   return point.y * GRID_SIZE + point.x;
+}
+
+function renderLeaderboard() {
+  leaderboardList.textContent = "";
+
+  if (leaderboard.length === 0) {
+    const item = document.createElement("li");
+    item.className = "leaderboard__empty";
+    item.textContent = "No games yet. Play to create your first score.";
+    leaderboardList.appendChild(item);
+    return;
+  }
+
+  leaderboard.forEach((entry) => {
+    const item = document.createElement("li");
+    const time = formatTimestamp(entry.playedAt);
+    item.textContent = `${entry.player}: ${entry.score}${time ? ` (${time})` : ""}`;
+    leaderboardList.appendChild(item);
+  });
 }
 
 function render() {
@@ -242,7 +342,14 @@ function startLoop() {
       return;
     }
 
+    const previousState = state;
     state = stepState(state);
+
+    if (!previousState.isGameOver && state.isGameOver) {
+      leaderboard = recordGame(leaderboard, playerNameInput.value, state.score);
+      renderLeaderboard();
+    }
+
     render();
   }, TICK_MS);
 }
@@ -310,6 +417,10 @@ restartButton.addEventListener("click", () => {
   restartGame();
 });
 
+playerNameInput.addEventListener("input", () => {
+  savePlayerName(playerNameInput.value);
+});
+
 for (const button of controlButtons) {
   button.addEventListener("click", () => {
     handleDirection(button.dataset.direction);
@@ -317,5 +428,6 @@ for (const button of controlButtons) {
 }
 
 buildBoard();
+renderLeaderboard();
 render();
 startLoop();
