@@ -388,6 +388,7 @@ function togglePause() {
   };
   render();
 }
+
 function isEditableElement(element) {
   if (!element || !(element instanceof Element)) {
     return false;
@@ -428,28 +429,6 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-    return;
-  }
-
-  const direction = keyToDirection(event.key);
-
-  if (direction) {
-    event.preventDefault();
-    handleDirection(direction);
-    return;
-  }
-
-  if (event.key === "Enter" && state.isGameOver) {
-    restartGame();
-    return;
-  }
-
-  if (event.key === " " || event.key === "p" || event.key === "P") {
-    event.preventDefault();
-    togglePause();
-  }
-});
-
 pauseButton.addEventListener("click", () => {
   togglePause();
 });
@@ -460,6 +439,10 @@ restartButton.addEventListener("click", () => {
 
 playerNameInput.addEventListener("input", () => {
   savePlayerName(playerNameInput.value);
+});
+
+playerNameInput.addEventListener("keydown", (event) => {
+  event.stopPropagation();
 });
 
 for (const button of controlButtons) {
