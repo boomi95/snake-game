@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main class="app">
+    <section class="panel">
+      <div class="panel__header">
+        <div>
+          <h1>Snake</h1>
+          <p class="subtitle">Classic grid movement, food, score, and restart.</p>
+        </div>
+        <div class="scoreboard" aria-live="polite">
+          <span class="scoreboard__label">Score</span>
+          <strong id="score">0</strong>
+        </div>
+      </div>
+
+      <div class="status-row">
+        <p id="status">Press any arrow key or WASD to start.</p>
+        <div class="actions">
+          <button id="pause-button" type="button">Pause</button>
+          <button id="restart-button" type="button">Restart</button>
+        </div>
+      </div>
+
+      <div class="board-wrap">
+        <div
+          id="board"
+          class="board"
+          role="grid"
+          aria-label="Snake game board"
+        ></div>
+      </div>
+
+      <div class="controls" aria-label="Touch controls">
+        <button class="control control--up" type="button" data-direction="up">Up</button>
+        <button class="control control--left" type="button" data-direction="left">Left</button>
+        <button class="control control--down" type="button" data-direction="down">Down</button>
+        <button class="control control--right" type="button" data-direction="right">Right</button>
+      </div>
+
+      <ul class="help">
+        <li>Move: Arrow keys or WASD</li>
+        <li>Pause: Space or P</li>
+        <li>Restart: Restart button or Enter after game over</li>
+        <li>Boundaries are fatal in classic mode</li>
+      </ul>
+    </section>
+  </main>
+
+  <script src="./script.js"></script>
+</body>
+</html>
