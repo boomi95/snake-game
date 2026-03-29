@@ -389,7 +389,24 @@ function togglePause() {
   render();
 }
 
+function isEditableTarget(target) {
+  if (!target || !(target instanceof HTMLElement)) {
+    return false;
+  }
+
+  const tagName = target.tagName;
+  return (
+    tagName === "INPUT" ||
+    tagName === "TEXTAREA" ||
+    target.isContentEditable
+  );
+}
+
 document.addEventListener("keydown", (event) => {
+  if (isEditableTarget(event.target)) {
+    return;
+  }
+
   const direction = keyToDirection(event.key);
 
   if (direction) {
